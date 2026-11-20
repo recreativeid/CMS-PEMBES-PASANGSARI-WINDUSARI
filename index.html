@@ -48,6 +48,9 @@
   <!-- Supabase JS Client v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <!-- Data Riil Canva Live SDK (894 Laporan & 4 Aspirasi Warga) -->
+  <script src="assets/js/canva_records.js"></script>
+
   <style>
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -216,31 +219,6 @@
   </header>
 
   <!-- ============================================================ -->
-  <!-- HERO BANNER (MOBILE VERSE EMBLEM HIGHLIGHT) -->
-  <!-- ============================================================ -->
-  <section class="bg-gradient-to-br from-emerald-900 via-teal-900 to-slate-900 text-white py-6 md:py-8 px-4 relative overflow-hidden shadow-inner">
-    <!-- Subtle Background Glow -->
-    <div class="absolute -top-24 -right-24 w-72 h-72 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-teal-500/20 rounded-full blur-3xl pointer-events-none"></div>
-
-    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center gap-4 sm:gap-6 relative z-10">
-      <img src="assets/images/logo-desa-pasangsari.jpg" alt="Logo Lambang Desa Pasangsari" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-emerald-400/80 shadow-xl bg-white shrink-0">
-      
-      <div class="text-center sm:text-left space-y-1">
-        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-          <span>🌾 Desa Pasangsari — Maju, Sejahtera, Berkelanjutan</span>
-        </div>
-        <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white">
-          Sistem Pelaporan & Transparansi Kinerja
-        </h2>
-        <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-          Kanal resmi publikasi kinerja harian 19 perangkat desa dan wadah penyampaian aspirasi masyarakat secara terbuka, akuntabel, dan terhubung ke cloud database Supabase.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================================================ -->
   <!-- MAIN CONTENT CONTAINER -->
   <!-- ============================================================ -->
   <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-5 md:py-8">
@@ -305,13 +283,13 @@
           <!-- Search & Dropdown Filter -->
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <!-- Jabatan Dropdown -->
-            <select id="filterJabatanPublic" onchange="renderReportsPublic()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+            <select id="filterJabatanPublic" onchange="renderReportsPublic(true)" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
               <option value="">Semua Jabatan (19)</option>
             </select>
 
             <!-- Search input -->
             <div class="relative w-full sm:w-60">
-              <input type="text" id="searchPublic" oninput="renderReportsPublic()" placeholder="Cari kegiatan/output..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-2 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
+              <input type="text" id="searchPublic" oninput="renderReportsPublic(true)" placeholder="Cari kegiatan/output..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-2 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
               <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </div>
           </div>
@@ -327,6 +305,11 @@
 
       <!-- Reports Grid Container -->
       <div id="reportsPublicContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Pagination Controls for Smooth 894+ Records Browsing -->
+      <div id="publicPagination" class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200 text-xs text-slate-600">
         <!-- Rendered dynamically -->
       </div>
     </section>
@@ -597,10 +580,10 @@
                 <p class="text-[11px] text-slate-500">Verifikasi atau hapus laporan perangkat desa.</p>
               </div>
               <div class="flex flex-wrap items-center gap-2">
-                <select id="adminFilterJabatan" onchange="renderReportsAdmin()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-none">
+                <select id="adminFilterJabatan" onchange="renderReportsAdmin(true)" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-none">
                   <option value="">Semua Jabatan</option>
                 </select>
-                <select id="adminFilterWaktu" onchange="renderReportsAdmin()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-none">
+                <select id="adminFilterWaktu" onchange="renderReportsAdmin(true)" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 focus:outline-none">
                   <option value="all">Semua Waktu</option>
                   <option value="today">Hari Ini</option>
                   <option value="month">Bulan Ini</option>
@@ -611,6 +594,11 @@
 
             <div id="reportsAdminContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <!-- Rendered via JS -->
+            </div>
+
+            <!-- Pagination Controls for Admin Reports -->
+            <div id="adminPagination" class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200 text-xs text-slate-600">
+              <!-- Rendered dynamically -->
             </div>
           </div>
 
@@ -800,6 +788,11 @@
             <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
             <span>Sinkronkan Data Lokal ke Supabase</span>
           </button>
+
+          <button type="button" onclick="reloadCanvaSeedData()" class="w-full py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg border border-dashed border-slate-300 transition flex items-center justify-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span>Muat Ulang 894 Data Asli dari Canva</span>
+          </button>
         </div>
       </form>
     </div>
@@ -889,89 +882,15 @@
     };
 
     // -------------------------------------------------------------
-    // REALISTIC PASANGSARI DATA SEED (FOR INSTANT SYSTEM INPUT)
+    // REALISTIC PASANGSARI DATA SEED (DIAMBIL DARI CANVA LIVE DATA)
     // -------------------------------------------------------------
-    const SEED_LAPORAN = [
-      {
-        id: 'rep-01',
-        judul: 'Penyaluran BLT Dana Desa Tahap III Tahun 2026',
-        jabatan: 'KAUR KEUANGAN',
-        deskripsi: 'Penyaluran Bantuan Langsung Tunai (BLT) Dana Desa kepada 45 KPM di Balai Desa Pasangsari disaksikan BPD, Babinsa, dan Bhabinkamtibmas berjalan aman, tertib, dan transparan.',
-        output: 'Tersalurkannya dana tunai tepat sasaran kepada seluruh KPM penerima.',
-        outcome: 'Meringankan beban ekonomi warga prasejahtera dan menjaga daya beli masyarakat.',
-        foto_url: 'assets/images/logo-desa-pasangsari.jpg',
-        created_at: new Date(Date.now() - 1 * 3600 * 1000).toISOString()
-      },
-      {
-        id: 'rep-02',
-        judul: 'Kerja Bakti Normalisasi Saluran Irigasi Sawah Dusun Brigasan',
-        jabatan: 'KADUS BRIGASAN',
-        deskripsi: 'Gotong royong bersama warga Dusun Brigasan membersihkan sedimentasi lumpur saluran irigasi sawah sepanjang 400 meter menjelang musim tanam padi dan cabai.',
-        output: 'Saluran irigasi lancar dan tanggul penahan tanah diperkuat.',
-        outcome: 'Pasokan air ke persawahan tercukupi merata tanpa potensi luapan ke rumah warga.',
-        foto_url: 'assets/images/logo-desa-pasangsari.jpg',
-        created_at: new Date(Date.now() - 3 * 3600 * 1000).toISOString()
-      },
-      {
-        id: 'rep-03',
-        judul: 'Pelayanan Administrasi Kependudukan Keliling Dusun Kwayuhan',
-        jabatan: 'KASI PELAYANAN',
-        deskripsi: 'Layanan jemput bola penerbitan surat pengantar KTP-el, surat keterangan domisili, dan pembaruan Kartu Keluarga bagi lansia dan disabilitas di Dusun Kwayuhan.',
-        output: 'Terbitnya 28 berkas surat pengantar kependudukan dan pembaruan KK warga.',
-        outcome: 'Masyarakat dusun terjauh terlayani secara cepat dan humanis tanpa biaya.',
-        foto_url: 'assets/images/logo-desa-pasangsari.jpg',
-        created_at: new Date(Date.now() - 5 * 3600 * 1000).toISOString()
-      },
-      {
-        id: 'rep-04',
-        judul: 'Musyawarah Dusun Sinkronisasi Prioritas RKPDes Dusun Jenggotan',
-        jabatan: 'KADUS JENGGOTAN',
-        deskripsi: 'Rapat musrenbangdus bersama para ketua RT, RW, tokoh pemuda, dan kelompok tani Jenggotan guna pemetaan usulan betonisasi jalan usaha tani.',
-        output: 'Draft prioritas pembangunan fisik jalan tani sepanjang 250 meter.',
-        outcome: 'Aspirasi warga terakomodasi dalam rancangan APBDes Pasangsari.',
-        foto_url: 'assets/images/logo-desa-pasangsari.jpg',
-        created_at: new Date(Date.now() - 20 * 3600 * 1000).toISOString()
-      },
-      {
-        id: 'rep-05',
-        judul: 'Monitoring Posyandu Integrasi Layanan Primer Dusun Cengkirangan',
-        jabatan: 'KASI KESRA',
-        deskripsi: 'Pendampingan kader kesehatan desa dalam penimbangan balita, pemberian vitamin A, dan pemeriksaan tekanan darah lansia di Dusun Cengkirangan Sentoso.',
-        output: 'Terperiksanya 42 balita dan 30 lansia dengan catatan gizi lengkap.',
-        outcome: 'Pencegahan stunting balita dan deteksi dini kesehatan lansia desa.',
-        foto_url: 'assets/images/logo-desa-pasangsari.jpg',
-        created_at: new Date(Date.now() - 28 * 3600 * 1000).toISOString()
-      },
-      {
-        id: 'rep-06',
-        judul: 'Rapat Koordinasi Penataan Batas Wilayah & Administrasi Dusun',
-        jabatan: 'SEKDES',
-        deskripsi: 'Rapat koordinasi bersama para Kepala Seksi dan Kepala Dusun membahas sinkronisasi peta blok PBB dan penataan batas antar RT.',
-        output: 'Matriks kesepakatan batas lingkungan dan buku registrasi tanah desa.',
-        outcome: 'Tertib administrasi pertanahan dan batas wilayah desa Pasangsari.',
-        foto_url: 'assets/images/logo-desa-pasangsari.jpg',
-        created_at: new Date(Date.now() - 48 * 3600 * 1000).toISOString()
-      }
-    ];
+    const SEED_LAPORAN = (typeof window !== 'undefined' && window.CANVA_SEED_LAPORAN && window.CANVA_SEED_LAPORAN.length > 0)
+      ? window.CANVA_SEED_LAPORAN
+      : [];
 
-    const SEED_SARAN = [
-      {
-        id: 'sar-01',
-        nama: 'Bpk. Slamet Raharjo',
-        kontak: '081234567890',
-        isi_saran: 'Mohon penambahan lampu penerangan jalan umum (PJU) di tikungan menuju Dusun Dimik Wonolelo karena saat malam hari sangat berkabut dan minim penerangan.',
-        status: 'Baru',
-        created_at: new Date(Date.now() - 2 * 3600 * 1000).toISOString()
-      },
-      {
-        id: 'sar-02',
-        nama: 'Warga Dusun Jenggotan',
-        kontak: '085799887766',
-        isi_saran: 'Usul pengadaan tong sampah terpilah di depan balai dusun agar lingkungan tetap bersih dan rapi terutama saat kegiatan posyandu dan pengajian.',
-        status: 'Ditinjau',
-        created_at: new Date(Date.now() - 24 * 3600 * 1000).toISOString()
-      }
-    ];
+    const SEED_SARAN = (typeof window !== 'undefined' && window.CANVA_SEED_SARAN && window.CANVA_SEED_SARAN.length > 0)
+      ? window.CANVA_SEED_SARAN
+      : [];
 
     // -------------------------------------------------------------
     // STATE
@@ -984,6 +903,12 @@
     let customDatePublic = null;
     let isHistoricalView = false;
     let selectedPhotoBase64 = null;
+
+    // Smooth Pagination State (Optimal untuk 894+ data)
+    let publicCurrentPage = 1;
+    const PUBLIC_PAGE_SIZE = 12;
+    let adminCurrentPage = 1;
+    const ADMIN_PAGE_SIZE = 12;
 
     let supabaseClient = null;
     let isSupabaseConnected = false;
@@ -1169,11 +1094,11 @@
     async function loadInitialData() {
       if (isSupabaseConnected && supabaseClient) {
         try {
-          const { data: lap } = await supabaseClient.from('laporan').select('*').order('created_at', { ascending: false });
+          const { data: lap } = await supabaseClient.from('laporan').select('*').order('created_at', { ascending: false }).range(0, 4999);
           if (lap && lap.length > 0) allLaporan = lap;
           else allLaporan = [...SEED_LAPORAN];
 
-          const { data: sar } = await supabaseClient.from('saran').select('*').order('created_at', { ascending: false });
+          const { data: sar } = await supabaseClient.from('saran').select('*').order('created_at', { ascending: false }).range(0, 999);
           if (sar && sar.length > 0) allSaran = sar;
           else allSaran = [...SEED_SARAN];
         } catch (e) {
@@ -1184,10 +1109,10 @@
       }
 
       updatePublicStats();
-      renderReportsPublic();
+      renderReportsPublic(true);
       if (currentAdminLogged) {
         updateChecklistJabatan();
-        renderReportsAdmin();
+        renderReportsAdmin(true);
         renderSuggestionsAdmin();
       }
       const countEl = document.getElementById('modalRecordsCount');
@@ -1195,26 +1120,81 @@
     }
 
     function loadLocalFallback() {
+      const seedLap = (typeof window !== 'undefined' && window.CANVA_SEED_LAPORAN && window.CANVA_SEED_LAPORAN.length > 0)
+        ? window.CANVA_SEED_LAPORAN
+        : SEED_LAPORAN;
+      const seedSar = (typeof window !== 'undefined' && window.CANVA_SEED_SARAN && window.CANVA_SEED_SARAN.length > 0)
+        ? window.CANVA_SEED_SARAN
+        : SEED_SARAN;
+
       const storedLap = localStorage.getItem('pasang_laporan_data');
       if (storedLap) {
-        try { allLaporan = JSON.parse(storedLap); } catch(e) { allLaporan = [...SEED_LAPORAN]; }
+        try {
+          const parsed = JSON.parse(storedLap);
+          // Bila data sebelumnya hanya contoh dummy kecil (< 50 item), otomatis perbarui ke seluruh 894 data asli Canva
+          if (Array.isArray(parsed) && parsed.length >= 50) {
+            allLaporan = parsed;
+          } else {
+            allLaporan = [...seedLap];
+            saveLocalData();
+          }
+        } catch(e) {
+          allLaporan = [...seedLap];
+          saveLocalData();
+        }
       } else {
-        allLaporan = [...SEED_LAPORAN];
-        localStorage.setItem('pasang_laporan_data', JSON.stringify(allLaporan));
+        allLaporan = [...seedLap];
+        saveLocalData();
       }
 
       const storedSar = localStorage.getItem('pasang_saran_data');
       if (storedSar) {
-        try { allSaran = JSON.parse(storedSar); } catch(e) { allSaran = [...SEED_SARAN]; }
+        try {
+          const parsedSar = JSON.parse(storedSar);
+          if (Array.isArray(parsedSar) && parsedSar.length >= 4) {
+            allSaran = parsedSar;
+          } else {
+            allSaran = [...seedSar];
+            saveLocalData();
+          }
+        } catch(e) {
+          allSaran = [...seedSar];
+          saveLocalData();
+        }
       } else {
-        allSaran = [...SEED_SARAN];
-        localStorage.setItem('pasang_saran_data', JSON.stringify(allSaran));
+        allSaran = [...seedSar];
+        saveLocalData();
       }
     }
 
     function saveLocalData() {
-      localStorage.setItem('pasang_laporan_data', JSON.stringify(allLaporan));
-      localStorage.setItem('pasang_saran_data', JSON.stringify(allSaran));
+      try {
+        localStorage.setItem('pasang_laporan_data', JSON.stringify(allLaporan));
+        localStorage.setItem('pasang_saran_data', JSON.stringify(allSaran));
+      } catch (e) {
+        console.warn('LocalStorage limit reached or disabled:', e);
+      }
+    }
+
+    function reloadCanvaSeedData() {
+      if (confirm('Muat ulang 894 laporan kegiatan asli dan 4 aspirasi warga dari Canva?')) {
+        const seedLap = (window.CANVA_SEED_LAPORAN && window.CANVA_SEED_LAPORAN.length > 0) ? window.CANVA_SEED_LAPORAN : SEED_LAPORAN;
+        const seedSar = (window.CANVA_SEED_SARAN && window.CANVA_SEED_SARAN.length > 0) ? window.CANVA_SEED_SARAN : SEED_SARAN;
+        allLaporan = [...seedLap];
+        allSaran = [...seedSar];
+        saveLocalData();
+        updatePublicStats();
+        renderReportsPublic(true);
+        if (currentAdminLogged) {
+          updateChecklistJabatan();
+          renderReportsAdmin(true);
+          renderSuggestionsAdmin();
+        }
+        const countEl = document.getElementById('modalRecordsCount');
+        if (countEl) countEl.textContent = `${allLaporan.length} Laporan`;
+        closeModal('modalSupabase');
+        showToast(`Berhasil memuat ${allLaporan.length} data asli Canva!`, 'success');
+      }
     }
 
     // -------------------------------------------------------------
@@ -1464,10 +1444,10 @@
         document.getElementById('formLaporan').reset();
         cancelPhotoSelect();
         updatePublicStats();
-        renderReportsPublic();
+        renderReportsPublic(true);
         if (currentAdminLogged) {
           updateChecklistJabatan();
-          renderReportsAdmin();
+          renderReportsAdmin(true);
         }
         showToast('Laporan kegiatan berhasil dikirim & dipublikasikan!', 'success');
         switchTab('transparansi');
@@ -1627,12 +1607,14 @@
       });
     }
 
-    function renderReportsPublic() {
+    function renderReportsPublic(resetPage = false) {
+      if (resetPage) publicCurrentPage = 1;
       const container = document.getElementById('reportsPublicContainer');
+      const paginationEl = document.getElementById('publicPagination');
       if (!container) return;
 
       const jabFilter = document.getElementById('filterJabatanPublic')?.value || '';
-      const query = (document.getElementById('searchPublic')?.value || '').toLowerCase();
+      const query = (document.getElementById('searchPublic')?.value || '').toLowerCase().trim();
 
       let filtered = filterDate(allLaporan, currentFilterPublic, customDatePublic);
       if (jabFilter) filtered = filtered.filter(r => r.jabatan === jabFilter);
@@ -1641,7 +1623,8 @@
           (r.judul && r.judul.toLowerCase().includes(query)) ||
           (r.deskripsi && r.deskripsi.toLowerCase().includes(query)) ||
           (r.jabatan && r.jabatan.toLowerCase().includes(query)) ||
-          (r.output && r.output.toLowerCase().includes(query))
+          (r.output && r.output.toLowerCase().includes(query)) ||
+          (r.outcome && r.outcome.toLowerCase().includes(query))
         );
       }
 
@@ -1653,14 +1636,60 @@
             <p class="text-[11px]">Silakan ganti kata kunci atau periode filter.</p>
           </div>
         `;
+        if (paginationEl) paginationEl.innerHTML = '';
         return;
       }
 
-      container.innerHTML = filtered.map(item => createReportCardHTML(item, false)).join('');
+      const totalItems = filtered.length;
+      const totalPages = Math.ceil(totalItems / PUBLIC_PAGE_SIZE) || 1;
+      if (publicCurrentPage > totalPages) publicCurrentPage = totalPages;
+      if (publicCurrentPage < 1) publicCurrentPage = 1;
+
+      const startIndex = (publicCurrentPage - 1) * PUBLIC_PAGE_SIZE;
+      const endIndex = Math.min(startIndex + PUBLIC_PAGE_SIZE, totalItems);
+      const pageItems = filtered.slice(startIndex, endIndex);
+
+      container.innerHTML = pageItems.map(item => createReportCardHTML(item, false)).join('');
+
+      if (paginationEl) {
+        paginationEl.innerHTML = `
+          <div class="font-medium text-slate-500">
+            Menampilkan <span class="font-bold text-slate-800">${startIndex + 1} - ${endIndex}</span> dari <span class="font-bold text-slate-800">${totalItems}</span> laporan
+          </div>
+          <div class="flex items-center gap-1.5 flex-wrap justify-center sm:justify-end">
+            <button onclick="changePublicPage(1)" ${publicCurrentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
+              «
+            </button>
+            <button onclick="changePublicPage(${publicCurrentPage - 1})" ${publicCurrentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
+              ‹ Sebelumnya
+            </button>
+            <span class="px-3 py-1.5 font-bold text-slate-700 bg-slate-100 rounded-lg">
+              ${publicCurrentPage} / ${totalPages}
+            </span>
+            <button onclick="changePublicPage(${publicCurrentPage + 1})" ${publicCurrentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
+              Berikutnya ›
+            </button>
+            <button onclick="changePublicPage(${totalPages})" ${publicCurrentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
+              »
+            </button>
+          </div>
+        `;
+      }
     }
 
-    function renderReportsAdmin() {
+    function changePublicPage(newPage) {
+      publicCurrentPage = newPage;
+      renderReportsPublic(false);
+      const container = document.getElementById('reportsPublicContainer');
+      if (container) {
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function renderReportsAdmin(resetPage = false) {
+      if (resetPage) adminCurrentPage = 1;
       const container = document.getElementById('reportsAdminContainer');
+      const paginationEl = document.getElementById('adminPagination');
       if (!container) return;
 
       const jabFilter = document.getElementById('adminFilterJabatan')?.value || '';
@@ -1671,22 +1700,73 @@
 
       if (filtered.length === 0) {
         container.innerHTML = `<div class="col-span-full clean-card p-6 text-center text-slate-400 text-xs">Belum ada laporan di kategori ini.</div>`;
+        if (paginationEl) paginationEl.innerHTML = '';
         return;
       }
-      container.innerHTML = filtered.map(item => createReportCardHTML(item, true)).join('');
+
+      const totalItems = filtered.length;
+      const totalPages = Math.ceil(totalItems / ADMIN_PAGE_SIZE) || 1;
+      if (adminCurrentPage > totalPages) adminCurrentPage = totalPages;
+      if (adminCurrentPage < 1) adminCurrentPage = 1;
+
+      const startIndex = (adminCurrentPage - 1) * ADMIN_PAGE_SIZE;
+      const endIndex = Math.min(startIndex + ADMIN_PAGE_SIZE, totalItems);
+      const pageItems = filtered.slice(startIndex, endIndex);
+
+      container.innerHTML = pageItems.map(item => createReportCardHTML(item, true)).join('');
+
+      if (paginationEl) {
+        paginationEl.innerHTML = `
+          <div class="font-medium text-slate-500">
+            Menampilkan <span class="font-bold text-slate-800">${startIndex + 1} - ${endIndex}</span> dari <span class="font-bold text-slate-800">${totalItems}</span> laporan
+          </div>
+          <div class="flex items-center gap-1.5 flex-wrap justify-center sm:justify-end">
+            <button onclick="changeAdminPage(1)" ${adminCurrentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
+              «
+            </button>
+            <button onclick="changeAdminPage(${adminCurrentPage - 1})" ${adminCurrentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
+              ‹ Sebelumnya
+            </button>
+            <span class="px-3 py-1.5 font-bold text-slate-700 bg-slate-100 rounded-lg">
+              ${adminCurrentPage} / ${totalPages}
+            </span>
+            <button onclick="changeAdminPage(${adminCurrentPage + 1})" ${adminCurrentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
+              Berikutnya ›
+            </button>
+            <button onclick="changeAdminPage(${totalPages})" ${adminCurrentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
+              »
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    function changeAdminPage(newPage) {
+      adminCurrentPage = newPage;
+      renderReportsAdmin(false);
+      const container = document.getElementById('reportsAdminContainer');
+      if (container) {
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     function createReportCardHTML(item, isAdmin) {
       const dateObj = new Date(item.created_at);
-      const timeStr = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-      const dateStr = dateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+      const isValidDate = !isNaN(dateObj.getTime());
+      const timeStr = isValidDate ? dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-';
+      const dateStr = isValidDate ? dateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : 'Tanggal -';
+      const imgSrc = item.foto_url || 'assets/images/logo-desa-pasangsari.jpg';
 
       return `
         <article class="clean-card overflow-hidden flex flex-col justify-between" id="report-${item.id}">
           <div>
             <!-- Image Thumbnail -->
-            <div class="relative aspect-video bg-slate-100 overflow-hidden cursor-pointer group" onclick="openLightbox('${item.foto_url}', '${escapeHtml(item.judul)}', '${escapeHtml(item.jabatan)} • ${dateStr}')">
-              <img src="${item.foto_url}" alt="${escapeHtml(item.judul)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            <div class="relative aspect-video bg-slate-100 overflow-hidden cursor-pointer group" onclick="openLightbox('${imgSrc}', '${escapeHtml(item.judul)}', '${escapeHtml(item.jabatan)} • ${dateStr}')">
+              <img src="${imgSrc}" 
+                   alt="${escapeHtml(item.judul)}" 
+                   loading="lazy" 
+                   onerror="this.onerror=null;this.src='assets/images/logo-desa-pasangsari.jpg';" 
+                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
               <div class="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
                 <span class="px-2.5 py-1 rounded-md bg-slate-900/80 text-[11px] font-medium backdrop-blur-sm">Perbesar Foto</span>
               </div>
@@ -1855,7 +1935,7 @@
       } else {
         if (customRow) customRow.classList.add('hidden');
         customDatePublic = null;
-        renderReportsPublic();
+        renderReportsPublic(true);
       }
     }
 
@@ -1863,7 +1943,7 @@
       const p = document.getElementById('datePickerPublic');
       if (!p.value) return;
       customDatePublic = p.value;
-      renderReportsPublic();
+      renderReportsPublic(true);
       showToast(`Filter: ${customDatePublic}`, 'info');
     }
 

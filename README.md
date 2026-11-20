@@ -5,18 +5,20 @@
 
 ![Logo Desa Pasangsari](assets/images/logo-desa-pasangsari.jpg)
 
-Aplikasi web modern berbasis **Mobile Verse** (Mobile-First App Experience & Responsive Desktop) dengan arsitektur **Clean Minimalist**, dirancang untuk transparansi publik, pelaporan kinerja harian 19 perangkat desa, serta kotak aspirasi masyarakat yang terhubung ke cloud database serverless **Supabase (PostgreSQL)**.
+Aplikasi web modern berbasis **Mobile Verse** (Mobile-First App Experience & Clean Minimalist UI) dengan integrasi **894 Data Laporan Riil dan 4 Kotak Saran Asli** dari sistem Canva live (`https://nyobajadulu.my.canva.site/pelaporan-kegiatan-pemdes-pasangsari`), dirancang untuk transparansi publik, pelaporan kinerja harian 19 perangkat desa, serta kotak aspirasi masyarakat yang terhubung ke cloud database serverless **Supabase (PostgreSQL)**.
 
 ---
 
 ## 📱 Desain "Mobile Verse" & Fitur Unggulan
 
 - 📲 **Mobile Verse Bottom Navigation Bar**: Navigasi bawah responsif mirip aplikasi native (Publik, Aspirasi, Lapor, Admin) pada layar ponsel dengan transisi mulus dan indikator aktif.
-- 🌾 **Identitas Resmi Desa Pasangsari**: Dilengkapi lambang logo resmi Desa Pasangsari (Gunung, Pertanian, Cabai, Masjid, dan Sungai).
+- 🌾 **Tampilan Minimalis & Rapi**: Header bersih terpusat dengan lambang logo resmi Desa Pasangsari (Gunung, Pertanian, Cabai, Masjid, dan Sungai), bebas dari banner tebal yang menutupi konten.
+- 📂 **Integrasi 898 Data Riil Canva**: Seluruh 894 kegiatan perangkat desa dan 4 kotak saran asli beserta tautan foto dokumentasi resolusi tinggi langsung terintegrasi secara bawaan (`assets/js/canva_records.js`).
+- ⚡ **Paginasi Halus & Lazy Loading**: Menampilkan 12 laporan per halaman dengan kontrol navigasi halaman cepat sehingga browsing 894 data tetap ringan, responsif, dan hemat kuota.
 - ⚡ **Dual-Engine Persistence**: Berjalan langsung secara offline (*LocalStorage* dengan seed data lengkap) dan mendukung sinkronisasi otomatis ke cloud database **Supabase**.
-- 🖨️ **Cetak Lembar SPJ & Dokumen LPJ Resmi**: Kop surat resmi Pemerintah Kabupaten Magelang, Kecamatan Windusari, Desa Pasangsari lengkap dengan kolom tanda tangan Kepala Desa & Pelapor.
+- 🖨️ **Cetak Lembar SPJ & Dokumen LPJ Resmi**: Kop surat resmi Pemerintah Kabupaten Magelang, Kecamatan Windusari, Desa Pasangsari lengkap dengan foto dokumentasi dan kolom tanda tangan Kepala Desa & Pelapor.
 - 🔍 **Pencarian Cerdas & Filter Fleksibel**: Filter berdasarkan waktu (Hari Ini, Bulan Ini, Tahun Ini, Pilih Tanggal) dan filter 19 Jabatan.
-- 📸 **Kompresi Foto Otomatis**: Foto dokumentasi lapangan dikompresi otomatis via HTML5 Canvas (max 1200px, kualitas 82%) sehingga hemat kuota dan tidak pernah gagal upload.
+- 📸 **Kompresi Foto Otomatis**: Foto dokumentasi baru dikompresi otomatis via HTML5 Canvas (max 1200px, kualitas 82%) dengan fallback lambang desa otomatis bila gambar offline.
 
 ---
 
@@ -55,9 +57,10 @@ Aplikasi web modern berbasis **Mobile Verse** (Mobile-First App Experience & Res
 
 1. Buka dashboard [https://supabase.com](https://supabase.com).
 2. Buat project baru dan buka **SQL Editor**.
-3. Jalankan seluruh baris perintah dari file [`supabase_schema.sql`](supabase_schema.sql).
-4. Masukkan **Project URL** dan **Anon API Key** pada modal Supabase di aplikasi web (pojok kanan atas atau via Dashboard Admin).
-5. Klik **Simpan & Hubungkan** lalu klik **Sinkronkan Data Lokal ke Supabase**.
+3. Jalankan seluruh baris perintah dari file [`supabase_schema.sql`](supabase_schema.sql) untuk membuat tabel, RLS, dan akun.
+4. *(Opsional)* Untuk memasukkan seluruh 894 data laporan riil Canva langsung ke Supabase, jalankan file [`supabase_seed_canva.sql`](supabase_seed_canva.sql).
+5. Masukkan **Project URL** dan **Anon API Key** pada modal Supabase di aplikasi web (pojok kanan atas atau via Dashboard Admin).
+6. Klik **Simpan & Hubungkan**. Anda juga dapat mengklik tombol **Sinkronkan Data Lokal ke Supabase** kapan saja.
 
 ---
 
