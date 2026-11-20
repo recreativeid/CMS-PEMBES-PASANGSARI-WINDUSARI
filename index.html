@@ -1750,22 +1750,64 @@
       }
     }
 
+    function getSafePhotoUrl(url, width = null) {
+      if (!url || typeof url !== 'string') return 'assets/images/logo-desa-pasangsari.jpg';
+      url = url.trim();
+      if (!url || url === '-') return 'assets/images/logo-desa-pasangsari.jpg';
+
+      // Jika path lokal atau base64
+      if (url.startsWith('assets/') || url.startsWith('data:image/') || url.startsWith('./assets/')) {
+        return url;
+      }
+
+      // Bila menggunakan hosting ImgBB (yang sering terkena blokir DNS Internet Positif di ISP lokal),
+      // alihkan secara cerdas melalui CDN Cloudflare wsrv.nl agar foto langsung tampil lancar & ringan
+      if (url.includes('ibb.co') || url.includes('imgbb.com')) {
+        let proxied = `https://wsrv.nl/?url=${encodeURIComponent(url)}`;
+        if (width) {
+          proxied += `&w=${width}&output=webp&q=80`;
+        }
+        return proxied;
+      }
+
+      return url;
+    }
+
+    function handleCardImgError(imgEl, rawUrl) {
+      imgEl.onerror = null;
+      if (rawUrl && (rawUrl.includes('ibb.co') || rawUrl.includes('imgbb.com'))) {
+        // Fallback cadangan: Coba mirror images.weserv.nl jika wsrv utama mengalami kendala
+        if (!imgEl.src.includes('weserv.nl')) {
+          imgEl.src = `https://images.weserv.nl/?url=${encodeURIComponent(rawUrl)}`;
+          imgEl.onerror = function() {
+            this.onerror = null;
+            this.src = 'assets/images/logo-desa-pasangsari.jpg';
+          };
+          return;
+        }
+      }
+      imgEl.src = 'assets/images/logo-desa-pasangsari.jpg';
+    }
+
     function createReportCardHTML(item, isAdmin) {
       const dateObj = new Date(item.created_at);
       const isValidDate = !isNaN(dateObj.getTime());
       const timeStr = isValidDate ? dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-';
       const dateStr = isValidDate ? dateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) : 'Tanggal -';
-      const imgSrc = item.foto_url || 'assets/images/logo-desa-pasangsari.jpg';
+      const rawUrl = item.foto_url || '';
+      const cardThumbnail = getSafePhotoUrl(rawUrl, 600);
+      const fullPhotoUrl = getSafePhotoUrl(rawUrl);
 
       return `
         <article class="clean-card overflow-hidden flex flex-col justify-between" id="report-${item.id}">
           <div>
             <!-- Image Thumbnail -->
-            <div class="relative aspect-video bg-slate-100 overflow-hidden cursor-pointer group" onclick="openLightbox('${imgSrc}', '${escapeHtml(item.judul)}', '${escapeHtml(item.jabatan)} • ${dateStr}')">
-              <img src="${imgSrc}" 
+            <div class="relative aspect-video bg-slate-100 overflow-hidden cursor-pointer group" onclick="openLightbox('${escapeHtml(fullPhotoUrl)}', '${escapeHtml(item.judul)}', '${escapeHtml(item.jabatan)} • ${dateStr}')">
+              <img src="${cardThumbnail}" 
                    alt="${escapeHtml(item.judul)}" 
                    loading="lazy" 
-                   onerror="this.onerror=null;this.src='assets/images/logo-desa-pasangsari.jpg';" 
+                   referrerpolicy="no-referrer"
+                   onerror="handleCardImgError(this, '${escapeHtml(rawUrl)}')" 
                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
               <div class="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
                 <span class="px-2.5 py-1 rounded-md bg-slate-900/80 text-[11px] font-medium backdrop-blur-sm">Perbesar Foto</span>
@@ -1951,7 +1993,13 @@
     // LIGHTBOX
     // -------------------------------------------------------------
     function openLightbox(url, title, subtitle) {
-      document.getElementById('lightboxImg').src = url;
+      const safeUrl = getSafePhotoUrl(url);
+      const img = document.getElementById('lightboxImg');
+      img.referrerPolicy = 'no-referrer';
+      img.src = safeUrl;
+      img.onerror = function() {
+        handleCardImgError(this, url);
+      };
       document.getElementById('lightboxTitle').textContent = title || '';
       document.getElementById('lightboxSubtitle').textContent = subtitle || '';
       document.getElementById('lightboxModal').classList.add('active');
@@ -2023,7 +2071,7 @@
 
           <div style="margin-bottom: 24px; text-align: center;">
             <p style="font-weight: bold; margin-bottom: 6px; font-size: 10.5pt; text-align: left;">Dokumentasi Lapangan:</p>
-            <img src="${item.foto_url}" style="max-height: 280px; max-width: 100%; border: 1px solid #ccc; padding: 4px; border-radius: 4px;">
+            <img src="${getSafePhotoUrl(item.foto_url, 800)}" referrerpolicy="no-referrer" onerror="handleCardImgError(this, '${escapeHtml(item.foto_url)}')" style="max-height: 280px; max-width: 100%; border: 1px solid #ccc; padding: 4px; border-radius: 4px;">
           </div>
 
           <table style="width: 100%; margin-top: 24px; font-size: 10.5pt;">
