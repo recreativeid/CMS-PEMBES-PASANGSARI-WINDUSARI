@@ -240,7 +240,7 @@
 
         <button onclick="switchTab('laporan')" id="desktop-nav-laporan" class="tab-btn px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 whitespace-nowrap flex items-center gap-1.5 transition">
           <svg class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          Laporan Kinerja
+          Kinerja
         </button>
 
         <button onclick="switchTab('admin')" id="desktop-nav-admin" class="tab-btn px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 whitespace-nowrap flex items-center gap-1.5 transition">
@@ -481,31 +481,65 @@
 
             <!-- Foto Upload Section (Otomatis Konversi ke SVG Ringan) -->
             <div>
-              <div class="flex items-center justify-between mb-1">
+              <div class="flex items-center justify-between mb-1.5">
                 <label class="block text-xs font-semibold text-slate-700">Foto Dokumentasi Kegiatan <span class="text-rose-500">*</span></label>
                 <span class="text-[10px] text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">Auto SVG Engine</span>
               </div>
-              <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:border-emerald-500 transition bg-slate-50 cursor-pointer relative" onclick="document.getElementById('fotoLaporan').click()">
-                <input type="file" id="fotoLaporan" accept="image/*" required onchange="handlePhotoSelect(event)" class="hidden">
+
+              <!-- Native Hidden File Inputs (Kamera Langsung & Galeri File) -->
+              <input type="file" id="inputFotoKamera" accept="image/*" capture="environment" onchange="handlePhotoSelect(event)" class="hidden">
+              <input type="file" id="inputFotoGaleri" accept="image/*" onchange="handlePhotoSelect(event)" class="hidden">
+
+              <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 sm:p-5 text-center bg-slate-50 relative">
                 
-                <div id="photoPlaceholder" class="space-y-1.5 py-3">
-                  <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center shadow-xs">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <!-- Placeholder saat belum ada foto terpilih -->
+                <div id="photoPlaceholder" class="space-y-3 py-2">
+                  <div class="w-12 h-12 rounded-2xl bg-emerald-100/70 text-emerald-800 mx-auto flex items-center justify-center shadow-xs">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                   </div>
-                  <p class="text-xs font-bold text-slate-700">Ambil Foto / Pilih dari Galeri</p>
-                  <p class="text-[11px] text-slate-500">JPG, PNG, JPEG, WebP. Otomatis dikonversi ke format SVG ringan.</p>
+                  <div>
+                    <p class="text-xs font-bold text-slate-800">Unggah Dokumentasi Foto Kegiatan</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Pilih salah satu metode unggah foto berikut:</p>
+                  </div>
+
+                  <!-- Dua Tombol Opsi: Kamera Langsung & Buka Galeri HP -->
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-sm mx-auto pt-1">
+                    <button type="button" onclick="openPhotoPicker('kamera')" class="py-2.5 px-3.5 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white rounded-xl font-bold text-xs shadow-sm hover:shadow transition flex items-center justify-center gap-2 cursor-pointer">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                      <span>Ambil Foto (Kamera)</span>
+                    </button>
+                    <button type="button" onclick="openPhotoPicker('galeri')" class="py-2.5 px-3.5 bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white rounded-xl font-bold text-xs shadow-sm hover:shadow transition flex items-center justify-center gap-2 cursor-pointer">
+                      <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                      <span>Pilih dari Galeri</span>
+                    </button>
+                  </div>
+
+                  <p class="text-[10px] text-slate-400">Mendukung format JPG, PNG, JPEG, WebP. Otomatis dikompresi ke SVG ringan.</p>
                 </div>
 
-                <div id="photoPreviewArea" class="hidden relative space-y-2">
-                  <img id="photoPreviewImg" src="" alt="Preview Foto Kegiatan" class="max-h-52 mx-auto rounded-lg object-contain shadow-sm border border-slate-200">
+                <!-- Preview saat foto berhasil dipilih & dikonversi -->
+                <div id="photoPreviewArea" class="hidden relative space-y-2.5">
+                  <img id="photoPreviewImg" src="" alt="Preview Foto Kegiatan" class="max-h-56 mx-auto rounded-lg object-contain shadow-sm border border-slate-200">
                   <div id="svgConvertBadge" class="hidden flex items-center justify-center gap-1.5 text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 py-1.5 px-3 rounded-lg max-w-fit mx-auto shadow-xs">
                     <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span id="svgBadgeText">Terkonversi ke Format SVG Ringan</span>
                   </div>
-                  <button type="button" onclick="cancelPhotoSelect(event)" title="Ganti Foto" class="absolute top-1 right-1 bg-slate-900/80 hover:bg-slate-900 text-white rounded-full p-1.5 transition shadow">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                  </button>
+                  <div class="flex items-center justify-center gap-2 pt-1 flex-wrap">
+                    <button type="button" onclick="openPhotoPicker('kamera')" class="py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 transition flex items-center gap-1 cursor-pointer">
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                      <span>Foto Ulang</span>
+                    </button>
+                    <button type="button" onclick="openPhotoPicker('galeri')" class="py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg border border-slate-200 transition flex items-center gap-1 cursor-pointer">
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                      <span>Ganti dari Galeri</span>
+                    </button>
+                    <button type="button" onclick="cancelPhotoSelect(event)" title="Hapus Foto" class="py-1.5 px-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold rounded-lg border border-rose-200 transition flex items-center gap-1 cursor-pointer">
+                      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                      <span>Hapus</span>
+                    </button>
+                  </div>
                 </div>
+
               </div>
             </div>
 
@@ -697,7 +731,7 @@
       <div class="nav-icon-wrapper w-8 h-8 rounded-full flex items-center justify-center transition">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
       </div>
-      <span class="text-[10px] mt-0.5 font-medium">Lapor</span>
+      <span class="text-[10px] mt-0.5 font-medium">Kinerja</span>
     </button>
 
     <button onclick="switchTab('admin')" id="mobile-nav-admin" class="mobile-nav-btn flex flex-col items-center justify-center py-1 px-3 text-slate-500 focus:outline-none">
@@ -1436,49 +1470,75 @@
     // -------------------------------------------------------------
     // FOTO COMPRESSION & AUTOMATIC SVG VECTOR CONVERSION
     // -------------------------------------------------------------
+    function openPhotoPicker(source) {
+      if (source === 'kamera') {
+        const cam = document.getElementById('inputFotoKamera');
+        if (cam) {
+          cam.value = '';
+          cam.click();
+        }
+      } else {
+        const gal = document.getElementById('inputFotoGaleri');
+        if (gal) {
+          gal.value = '';
+          gal.click();
+        }
+      }
+    }
+
     function handlePhotoSelect(e) {
-      const file = e.target.files[0];
+      const file = e.target.files && e.target.files[0];
       if (!file) return;
 
-      if (file.size > 10 * 1024 * 1024) {
-        showToast('Ukuran file maksimal 10MB', 'error');
+      // Mendukung file kamera beresolusi tinggi hingga 50MB
+      if (file.size > 50 * 1024 * 1024) {
+        showToast('Ukuran file foto maksimal 50MB', 'error');
         e.target.value = '';
         return;
       }
 
-      showToast('Mengonversi foto ke format SVG ringan...', 'info');
+      showToast('Memuat & mengonversi foto ke SVG...', 'info');
 
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const img = new Image();
-        img.onload = function() {
-          // Downscale to maxDim 900px for crisp mobile and web performance
+      // Gunakan URL.createObjectURL untuk performa tinggi & hemat memori di HP
+      let objectUrl = '';
+      try {
+        objectUrl = URL.createObjectURL(file);
+      } catch (err) {
+        console.warn('Fallback ke FileReader:', err);
+      }
+
+      const img = new Image();
+      img.onload = function() {
+        try {
+          // Downscale ke maxDim 900px agar super ringan dan tajam di layar
           const maxDim = 900;
-          let w = img.width, h = img.height;
-          if (w > h && w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
-          else if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+          let w = img.naturalWidth || img.width;
+          let h = img.naturalHeight || img.height;
+          if (!w || !h) { w = 800; h = 600; }
+
+          if (w > h && w > maxDim) {
+            h = Math.round((h * maxDim) / w);
+            w = maxDim;
+          } else if (h > maxDim) {
+            w = Math.round((w * maxDim) / h);
+            h = maxDim;
+          }
 
           const canvas = document.createElement('canvas');
           canvas.width = w;
           canvas.height = h;
           const ctx = canvas.getContext('2d');
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
           ctx.drawImage(img, 0, 0, w, h);
 
-          // Get highly compressed raster image stream
-          let rasterDataUrl = '';
-          try {
-            rasterDataUrl = canvas.toDataURL('image/webp', 0.82);
-            if (!rasterDataUrl.startsWith('data:image/webp')) {
-              rasterDataUrl = canvas.toDataURL('image/jpeg', 0.80);
-            }
-          } catch(err) {
-            rasterDataUrl = canvas.toDataURL('image/jpeg', 0.80);
-          }
+          // Format JPEG 0.82 terbukti kompatibel universal di seluruh browser Android & iOS
+          const rasterDataUrl = canvas.toDataURL('image/jpeg', 0.82);
 
-          // Wrap automatically into clean, valid SVG vector format
+          // Bungkus ke format SVG Vektor sesuai permintaan
           const svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><image width="${w}" height="${h}" xlink:href="${rasterDataUrl}" href="${rasterDataUrl}"/></svg>`;
           
-          // Data URL with image/svg+xml format for database storage and display
+          // Data URL berformat image/svg+xml untuk disimpan ke database
           selectedPhotoBase64 = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgMarkup);
 
           const approxKb = Math.round((selectedPhotoBase64.length * 0.75) / 1024);
@@ -1495,20 +1555,60 @@
 
           document.getElementById('photoPreviewArea').classList.remove('hidden');
           document.getElementById('photoPlaceholder').classList.add('hidden');
-          showToast(`Foto berhasil dikonversi ke SVG (${approxKb} KB)`, 'success');
-        };
-        img.onerror = function() {
-          showToast('Gagal memproses gambar. Pastikan format file didukung.', 'error');
-        };
-        img.src = evt.target.result;
+          showToast(`Foto berhasil dimuat & dikonversi ke SVG (${approxKb} KB)`, 'success');
+        } catch (processErr) {
+          console.error('Error proses foto:', processErr);
+          showToast('Gagal memproses foto. Silakan coba lagi.', 'error');
+        } finally {
+          if (objectUrl) URL.revokeObjectURL(objectUrl);
+        }
       };
-      reader.readAsDataURL(file);
+
+      img.onerror = function() {
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        // Fallback: FileReader jika createObjectURL diblokir izin khusus
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const fallbackImg = new Image();
+          fallbackImg.onload = function() {
+            const maxDim = 900;
+            let w = fallbackImg.width, h = fallbackImg.height;
+            if (w > h && w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+            else if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+            const canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(fallbackImg, 0, 0, w, h);
+            const rasterDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+            const svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><image width="${w}" height="${h}" xlink:href="${rasterDataUrl}" href="${rasterDataUrl}"/></svg>`;
+            selectedPhotoBase64 = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgMarkup);
+            const approxKb = Math.round((selectedPhotoBase64.length * 0.75) / 1024);
+            document.getElementById('photoPreviewImg').src = selectedPhotoBase64;
+            document.getElementById('photoPreviewArea').classList.remove('hidden');
+            document.getElementById('photoPlaceholder').classList.add('hidden');
+            showToast(`Foto berhasil dimuat (${approxKb} KB)`, 'success');
+          };
+          fallbackImg.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      };
+
+      if (objectUrl) {
+        img.src = objectUrl;
+      } else {
+        const reader = new FileReader();
+        reader.onload = function(evt) { img.src = evt.target.result; };
+        reader.readAsDataURL(file);
+      }
     }
 
     function cancelPhotoSelect(e) {
       if (e) e.stopPropagation();
       selectedPhotoBase64 = null;
-      document.getElementById('fotoLaporan').value = '';
+      const cam = document.getElementById('inputFotoKamera');
+      const gal = document.getElementById('inputFotoGaleri');
+      if (cam) cam.value = '';
+      if (gal) gal.value = '';
       const previewImg = document.getElementById('photoPreviewImg');
       if (previewImg) previewImg.src = '';
       const badgeEl = document.getElementById('svgConvertBadge');
