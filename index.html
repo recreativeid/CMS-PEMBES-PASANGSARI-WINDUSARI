@@ -137,25 +137,64 @@
       transform: translateY(0) scale(1);
     }
 
+    /* Clean Screen / Print Separation */
+    #printArea {
+      display: none;
+    }
+
     /* Official SPJ Print Styling */
     @media print {
-      body * {
-        visibility: hidden !important;
+      body > *:not(#printArea),
+      header,
+      main,
+      nav,
+      footer,
+      .modal-backdrop,
+      .no-print,
+      #tab-transparansi,
+      #tab-saran,
+      #tab-laporan,
+      #tab-admin,
+      #publicPagination,
+      #reportsPublicContainer,
+      #toastContainer {
+        display: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
       }
-      #printArea, #printArea * {
+
+      html, body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: auto !important;
+        height: auto !important;
+        overflow: visible !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      #printArea {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        background: #ffffff !important;
         visibility: visible !important;
       }
-      #printArea {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        margin: 0;
-        padding: 20px;
-        background: white;
+
+      #printArea * {
+        visibility: visible !important;
       }
-      .no-print {
-        display: none !important;
+
+      @page {
+        size: A4 portrait;
+        margin: 10mm 12mm 10mm 12mm;
       }
     }
   </style>
@@ -724,13 +763,12 @@
       <form id="formLoginAdmin" onsubmit="handleAdminLogin(event)" class="space-y-3.5">
         <div>
           <label for="usernameAdmin" class="block text-xs font-semibold text-slate-700 mb-1">Username <span class="text-rose-500">*</span></label>
-          <input type="text" id="usernameAdmin" required placeholder="admin" class="w-full text-xs md:text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <input type="text" id="usernameAdmin" required placeholder="Masukkan username" autocomplete="username" class="w-full text-xs md:text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
 
         <div>
           <label for="passwordAdmin" class="block text-xs font-semibold text-slate-700 mb-1">Password <span class="text-rose-500">*</span></label>
-          <input type="password" id="passwordAdmin" required placeholder="••••••••" class="w-full text-xs md:text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <p class="text-[10px] text-slate-400 mt-1">Default: admin / windusari2024</p>
+          <input type="password" id="passwordAdmin" required placeholder="Masukkan password" autocomplete="current-password" class="w-full text-xs md:text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
 
         <div class="flex items-center gap-2 pt-1">
@@ -827,9 +865,48 @@
   <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-xs sm:max-w-sm w-full pointer-events-none"></div>
 
   <!-- ============================================================ -->
-  <!-- SPJ OFFICIAL PRINT TEMPLATE -->
+  <!-- MODAL: PRATINJAU LEMBAR SPJ CETAK -->
   <!-- ============================================================ -->
-  <div id="printArea" class="hidden"></div>
+  <div id="modalSpjPreview" class="modal-backdrop fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="modal-panel bg-white w-full sm:max-w-2xl max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-slate-100 bg-slate-50">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
+            🖨️
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">Pratinjau Lembar SPJ Resmi</h3>
+            <p class="text-[10px] text-slate-500">Pemerintah Desa Pasangsari, Windusari</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modalSpjPreview')" class="text-slate-400 hover:text-slate-600 transition p-1 rounded-lg hover:bg-slate-200">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Document Content Body (Paper-like view) -->
+      <div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100/70">
+        <div id="spjPreviewContent" class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 text-slate-900 max-w-xl mx-auto">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-3.5 sm:p-4 bg-white border-t border-slate-100 flex items-center justify-end gap-2">
+        <button type="button" onclick="closeModal('modalSpjPreview')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl border border-slate-200 transition">
+          Tutup
+        </button>
+        <button type="button" onclick="triggerBrowserPrint()" class="px-5 py-2 text-xs font-bold bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white rounded-xl shadow-sm hover:shadow transition flex items-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          <span>Cetak Dokumen / Simpan PDF</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPJ OFFICIAL PRINT TEMPLATE -->
+  <div id="printArea"></div>
 
   <!-- ============================================================ -->
   <!-- APPLICATION SCRIPT & 19 ACCOUNTS DATA SEED -->
@@ -2051,120 +2128,153 @@
     }
 
     // -------------------------------------------------------------
-    // SPJ PRINT TEMPLATES
+    // SPJ PRINT TEMPLATES & PREVIEW CONTROLLER
     // -------------------------------------------------------------
+    function triggerBrowserPrint() {
+      showToast('Menyiapkan dokumen cetak...', 'info');
+      setTimeout(() => {
+        window.print();
+      }, 300);
+    }
+
     function printSingleLaporan(id) {
       const item = allLaporan.find(r => r.id == id);
       if (!item) return;
 
       const dateObj = new Date(item.created_at);
       const dateStr = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      const printDiv = document.getElementById('printArea');
+      const photoSrc = getSafePhotoUrl(item.foto_url, 800);
 
-      printDiv.innerHTML = `
-        <div style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; padding: 20px; color: #000;">
-          <div style="display: flex; align-items: center; justify-content: center; gap: 16px; border-bottom: 3px double #000; padding-bottom: 12px; margin-bottom: 20px;">
-            <img src="assets/images/logo-desa-pasangsari.jpg" style="width: 75px; height: 75px; object-fit: cover; border-radius: 50%;">
-            <div style="text-align: center;">
-              <h3 style="margin: 0; font-size: 15pt; font-weight: bold; text-transform: uppercase;">Pemerintah Kabupaten Magelang</h3>
-              <h4 style="margin: 2px 0; font-size: 13pt; font-weight: bold; text-transform: uppercase;">Kecamatan Windusari</h4>
-              <h2 style="margin: 2px 0; font-size: 17pt; font-weight: bold; text-transform: uppercase;">Pemerintah Desa Pasangsari</h2>
-              <p style="margin: 0; font-size: 8.5pt; font-style: italic;">Alamat: Kantor Kepala Desa Pasangsari, Windusari, Kab. Magelang 56152</p>
-            </div>
-          </div>
-
-          <div style="text-align: center; margin-bottom: 20px;">
-            <h3 style="margin: 0; font-size: 12pt; font-weight: bold; text-decoration: underline; text-transform: uppercase;">LEMBAR LAPORAN KINERJA PERANGKAT DESA</h3>
-            <p style="margin: 3px 0 0 0; font-size: 9.5pt;">Nomor Berkas: PL-EMA/${dateObj.getFullYear()}/${item.id.toString().substring(0, 6)}</p>
-          </div>
-
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 10.5pt;">
+      const htmlContent = `
+        <div style="font-family: 'Times New Roman', serif; max-width: 750px; margin: 0 auto; padding: 12px; color: #000; line-height: 1.35; background: #fff;">
+          <!-- KOP SURAT RESMI -->
+          <table style="width: 100%; border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 14px; border-collapse: collapse;">
             <tr>
-              <td style="width: 25%; padding: 5px; font-weight: bold; vertical-align: top;">Nama Kegiatan</td>
-              <td style="width: 3%; padding: 5px; vertical-align: top;">:</td>
-              <td style="padding: 5px; font-weight: bold;">${escapeHtml(item.judul)}</td>
-            </tr>
-            <tr>
-              <td style="padding: 5px; font-weight: bold; vertical-align: top;">Pelaksana / Jabatan</td>
-              <td style="padding: 5px; vertical-align: top;">:</td>
-              <td style="padding: 5px;">${escapeHtml(item.jabatan)}</td>
-            </tr>
-            <tr>
-              <td style="padding: 5px; font-weight: bold; vertical-align: top;">Tanggal Pelaksanaan</td>
-              <td style="padding: 5px; vertical-align: top;">:</td>
-              <td style="padding: 5px;">${dateStr}</td>
-            </tr>
-            <tr>
-              <td style="padding: 5px; font-weight: bold; vertical-align: top;">Uraian Kegiatan</td>
-              <td style="padding: 5px; vertical-align: top;">:</td>
-              <td style="padding: 5px; text-align: justify;">${escapeHtml(item.deskripsi)}</td>
-            </tr>
-            <tr>
-              <td style="padding: 5px; font-weight: bold; vertical-align: top;">Output / Hasil</td>
-              <td style="padding: 5px; vertical-align: top;">:</td>
-              <td style="padding: 5px;">${escapeHtml(item.output || '-')}</td>
-            </tr>
-            <tr>
-              <td style="padding: 5px; font-weight: bold; vertical-align: top;">Outcome / Dampak</td>
-              <td style="padding: 5px; vertical-align: top;">:</td>
-              <td style="padding: 5px;">${escapeHtml(item.outcome || '-')}</td>
+              <td style="width: 75px; text-align: center; vertical-align: middle;">
+                <img src="assets/images/logo-desa-pasangsari.jpg" style="width: 68px; height: 68px; object-fit: cover; border-radius: 50%;">
+              </td>
+              <td style="text-align: center; vertical-align: middle; padding-left: 8px;">
+                <h3 style="margin: 0; font-size: 13pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Pemerintah Kabupaten Magelang</h3>
+                <h4 style="margin: 2px 0; font-size: 11pt; font-weight: bold; text-transform: uppercase;">Kecamatan Windusari</h4>
+                <h2 style="margin: 2px 0; font-size: 15pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Pemerintah Desa Pasangsari</h2>
+                <p style="margin: 0; font-size: 8pt; font-style: italic;">Alamat: Kantor Kepala Desa Pasangsari, Kec. Windusari, Kab. Magelang 56152</p>
+              </td>
             </tr>
           </table>
 
-          <div style="margin-bottom: 24px; text-align: center;">
-            <p style="font-weight: bold; margin-bottom: 6px; font-size: 10.5pt; text-align: left;">Dokumentasi Lapangan:</p>
-            <img src="${getSafePhotoUrl(item.foto_url, 800)}" referrerpolicy="no-referrer" onerror="handleCardImgError(this, '${escapeHtml(item.foto_url)}')" style="max-height: 280px; max-width: 100%; border: 1px solid #ccc; padding: 4px; border-radius: 4px;">
+          <!-- JUDUL BERKAS -->
+          <div style="text-align: center; margin-bottom: 14px;">
+            <h3 style="margin: 0; font-size: 11.5pt; font-weight: bold; text-decoration: underline; text-transform: uppercase;">LEMBAR LAPORAN KINERJA PERANGKAT DESA</h3>
+            <p style="margin: 3px 0 0 0; font-size: 8.5pt;">Nomor Berkas: PL-EMA/${dateObj.getFullYear()}/${item.id.toString().substring(0, 6)}</p>
           </div>
 
-          <table style="width: 100%; margin-top: 24px; font-size: 10.5pt;">
+          <!-- TABEL DETAIL KEGIATAN -->
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 10pt;">
             <tr>
-              <td style="width: 50%; text-align: center;">
+              <td style="width: 25%; padding: 4px 6px; font-weight: bold; vertical-align: top;">Nama Kegiatan</td>
+              <td style="width: 2%; padding: 4px 0; vertical-align: top;">:</td>
+              <td style="padding: 4px 6px; font-weight: bold;">${escapeHtml(item.judul)}</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px; font-weight: bold; vertical-align: top;">Pelaksana / Jabatan</td>
+              <td style="padding: 4px 0; vertical-align: top;">:</td>
+              <td style="padding: 4px 6px;">${escapeHtml(item.jabatan)}</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px; font-weight: bold; vertical-align: top;">Tanggal Pelaksanaan</td>
+              <td style="padding: 4px 0; vertical-align: top;">:</td>
+              <td style="padding: 4px 6px;">${dateStr}</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px; font-weight: bold; vertical-align: top;">Uraian Kegiatan</td>
+              <td style="padding: 4px 0; vertical-align: top;">:</td>
+              <td style="padding: 4px 6px; text-align: justify;">${escapeHtml(item.deskripsi)}</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px; font-weight: bold; vertical-align: top;">Output / Hasil</td>
+              <td style="padding: 4px 0; vertical-align: top;">:</td>
+              <td style="padding: 4px 6px;">${escapeHtml(item.output || '-')}</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px; font-weight: bold; vertical-align: top;">Outcome / Dampak</td>
+              <td style="padding: 4px 0; vertical-align: top;">:</td>
+              <td style="padding: 4px 6px;">${escapeHtml(item.outcome || '-')}</td>
+            </tr>
+          </table>
+
+          <!-- FOTO DOKUMENTASI KEGIATAN -->
+          <div style="margin-bottom: 16px; text-align: center; page-break-inside: avoid; break-inside: avoid;">
+            <p style="font-weight: bold; margin-bottom: 5px; font-size: 10pt; text-align: left;">Dokumentasi Lapangan:</p>
+            <img src="${photoSrc}" referrerpolicy="no-referrer" onerror="handleCardImgError(this, '${escapeHtml(item.foto_url)}')" style="max-height: 250px; max-width: 90%; border: 1px solid #ccc; padding: 3px; border-radius: 4px; object-fit: contain;">
+          </div>
+
+          <!-- TANDA TANGAN LEGALITAS -->
+          <table style="width: 100%; margin-top: 16px; font-size: 10pt; page-break-inside: avoid; break-inside: avoid;">
+            <tr>
+              <td style="width: 50%; text-align: center; vertical-align: top;">
                 Mengetahui,<br>
-                <strong>KEPALA DESA PASANGSARI</strong><br><br><br><br><br>
-                ( .................................................. )
+                <strong>KEPALA DESA PASANGSARI</strong><br><br><br><br>
+                <strong>( .................................................. )</strong>
               </td>
-              <td style="width: 50%; text-align: center;">
+              <td style="width: 50%; text-align: center; vertical-align: top;">
                 Pasangsari, ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}<br>
                 Pelapor / Penanggung Jawab,<br>
-                <strong>${escapeHtml(item.jabatan)}</strong><br><br><br><br><br>
-                ( .................................................. )
+                <strong>${escapeHtml(item.jabatan)}</strong><br><br><br><br>
+                <strong>( .................................................. )</strong>
               </td>
             </tr>
           </table>
         </div>
       `;
 
-      printDiv.classList.remove('hidden');
-      window.print();
-      printDiv.classList.add('hidden');
+      // Set directly to print area (so print spooler always has it ready)
+      const printDiv = document.getElementById('printArea');
+      if (printDiv) printDiv.innerHTML = htmlContent;
+
+      // Also render into modal preview for on-screen inspection
+      const previewBody = document.getElementById('spjPreviewContent');
+      if (previewBody) {
+        previewBody.innerHTML = htmlContent;
+        openModal('modalSpjPreview');
+      } else {
+        triggerBrowserPrint();
+      }
     }
 
     function printRekapLaporan() {
       const now = new Date();
       const printDiv = document.getElementById('printArea');
+      if (!printDiv) return;
 
       printDiv.innerHTML = `
-        <div style="font-family: 'Times New Roman', serif; max-width: 900px; margin: 0 auto; padding: 20px; color: #000;">
-          <div style="text-align: center; border-bottom: 3px double #000; padding-bottom: 12px; margin-bottom: 20px;">
-            <h3 style="margin: 0; font-size: 15pt; font-weight: bold; text-transform: uppercase;">Pemerintah Kabupaten Magelang</h3>
-            <h4 style="margin: 2px 0; font-size: 13pt; font-weight: bold; text-transform: uppercase;">Kecamatan Windusari</h4>
-            <h2 style="margin: 2px 0; font-size: 17pt; font-weight: bold; text-transform: uppercase;">Pemerintah Desa Pasangsari</h2>
-            <p style="margin: 0; font-size: 9pt; font-style: italic;">Sistem Pelaporan Transparansi Kinerja (PASANG LAP EMAS)</p>
-          </div>
+        <div style="font-family: 'Times New Roman', serif; max-width: 900px; margin: 0 auto; padding: 12px; color: #000; line-height: 1.35; background: #fff;">
+          <table style="width: 100%; border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 14px; border-collapse: collapse;">
+            <tr>
+              <td style="width: 75px; text-align: center; vertical-align: middle;">
+                <img src="assets/images/logo-desa-pasangsari.jpg" style="width: 68px; height: 68px; object-fit: cover; border-radius: 50%;">
+              </td>
+              <td style="text-align: center; vertical-align: middle; padding-left: 8px;">
+                <h3 style="margin: 0; font-size: 13pt; font-weight: bold; text-transform: uppercase;">Pemerintah Kabupaten Magelang</h3>
+                <h4 style="margin: 2px 0; font-size: 11pt; font-weight: bold; text-transform: uppercase;">Kecamatan Windusari</h4>
+                <h2 style="margin: 2px 0; font-size: 15pt; font-weight: bold; text-transform: uppercase;">Pemerintah Desa Pasangsari</h2>
+                <p style="margin: 0; font-size: 8pt; font-style: italic;">Sistem Pelaporan Transparansi Kinerja (PASANG LAP EMAS)</p>
+              </td>
+            </tr>
+          </table>
 
-          <h3 style="text-align: center; font-size: 13pt; font-weight: bold; margin-bottom: 15px; text-decoration: underline;">
+          <h3 style="text-align: center; font-size: 12pt; font-weight: bold; margin-bottom: 12px; text-decoration: underline;">
             REKAPITULASI LAPORAN KINERJA PERANGKAT DESA
           </h3>
-          <p style="font-size: 9.5pt; margin-bottom: 10px;">Tanggal Cetak: ${now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} | Total Laporan: ${allLaporan.length} Kegiatan</p>
+          <p style="font-size: 9pt; margin-bottom: 10px;">Tanggal Cetak: ${now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} | Total Laporan: ${allLaporan.length} Kegiatan</p>
 
-          <table style="width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 25px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 8.5pt; margin-bottom: 20px;">
             <thead>
               <tr style="background: #f0f0f0;">
-                <th style="border: 1px solid #000; padding: 5px; width: 5%;">No</th>
-                <th style="border: 1px solid #000; padding: 5px; width: 20%;">Jabatan</th>
-                <th style="border: 1px solid #000; padding: 5px; width: 27%;">Kegiatan</th>
-                <th style="border: 1px solid #000; padding: 5px; width: 33%;">Uraian Ringkas</th>
-                <th style="border: 1px solid #000; padding: 5px; width: 15%;">Waktu</th>
+                <th style="border: 1px solid #000; padding: 4px; width: 5%;">No</th>
+                <th style="border: 1px solid #000; padding: 4px; width: 20%;">Jabatan</th>
+                <th style="border: 1px solid #000; padding: 4px; width: 27%;">Kegiatan</th>
+                <th style="border: 1px solid #000; padding: 4px; width: 33%;">Uraian Ringkas</th>
+                <th style="border: 1px solid #000; padding: 4px; width: 15%;">Waktu</th>
               </tr>
             </thead>
             <tbody>
@@ -2172,38 +2282,36 @@
                 const d = new Date(item.created_at);
                 const ds = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
                 return `
-                  <tr>
-                    <td style="border: 1px solid #000; padding: 5px; text-align: center;">${idx + 1}</td>
-                    <td style="border: 1px solid #000; padding: 5px; font-weight: bold;">${escapeHtml(item.jabatan)}</td>
-                    <td style="border: 1px solid #000; padding: 5px;">${escapeHtml(item.judul)}</td>
-                    <td style="border: 1px solid #000; padding: 5px; text-align: justify;">${escapeHtml(item.deskripsi)}</td>
-                    <td style="border: 1px solid #000; padding: 5px; text-align: center;">${ds}</td>
+                  <tr style="page-break-inside: avoid; break-inside: avoid;">
+                    <td style="border: 1px solid #000; padding: 4px; text-align: center;">${idx + 1}</td>
+                    <td style="border: 1px solid #000; padding: 4px; font-weight: bold;">${escapeHtml(item.jabatan)}</td>
+                    <td style="border: 1px solid #000; padding: 4px;">${escapeHtml(item.judul)}</td>
+                    <td style="border: 1px solid #000; padding: 4px; text-align: justify;">${escapeHtml(item.deskripsi)}</td>
+                    <td style="border: 1px solid #000; padding: 4px; text-align: center;">${ds}</td>
                   </tr>
                 `;
               }).join('')}
             </tbody>
           </table>
 
-          <table style="width: 100%; margin-top: 25px; font-size: 10.5pt;">
+          <table style="width: 100%; margin-top: 20px; font-size: 10pt; page-break-inside: avoid; break-inside: avoid;">
             <tr>
-              <td style="width: 50%; text-align: center;">
+              <td style="width: 50%; text-align: center; vertical-align: top;">
                 Mengetahui,<br>
-                <strong>KEPALA DESA PASANGSARI</strong><br><br><br><br><br>
-                ( .................................................. )
+                <strong>KEPALA DESA PASANGSARI</strong><br><br><br><br>
+                <strong>( .................................................. )</strong>
               </td>
-              <td style="width: 50%; text-align: center;">
+              <td style="width: 50%; text-align: center; vertical-align: top;">
                 Pasangsari, ${now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}<br>
-                Petugas Verifikator Admin,<br><br><br><br><br>
-                ( .................................................. )
+                Petugas Verifikator Admin,<br><br><br><br>
+                <strong>( .................................................. )</strong>
               </td>
             </tr>
           </table>
         </div>
       `;
 
-      printDiv.classList.remove('hidden');
-      window.print();
-      printDiv.classList.add('hidden');
+      triggerBrowserPrint();
     }
 
     // -------------------------------------------------------------
