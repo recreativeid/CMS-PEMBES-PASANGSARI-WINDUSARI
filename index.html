@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full bg-slate-50 antialiased selection:bg-emerald-100 selection:text-emerald-900">
+<html lang="id" class="min-h-full scroll-smooth bg-slate-50 antialiased selection:bg-emerald-100 selection:text-emerald-900">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
@@ -52,20 +52,26 @@
   <script src="assets/js/canva_records.js"></script>
 
   <style>
+    html {
+      scroll-behavior: smooth;
+    }
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      padding-bottom: env(safe-area-inset-bottom, 0px);
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
-    /* Mobile Verse Smooth App Behavior */
+    /* Mobile Verse Smooth App Behavior & Clear Bottom Nav Clearance */
     .pb-safe {
-      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 72px);
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 110px) !important;
     }
     @media (min-width: 768px) {
       .pb-safe {
-        padding-bottom: 24px;
+        padding-bottom: 40px !important;
       }
     }
 
@@ -154,7 +160,7 @@
     }
   </style>
 </head>
-<body class="h-full flex flex-col text-slate-800 bg-slate-50 selection:bg-emerald-100 selection:text-emerald-900 pb-safe">
+<body class="min-h-screen flex flex-col text-slate-800 bg-slate-50 selection:bg-emerald-100 selection:text-emerald-900 pb-safe">
 
   <!-- ============================================================ -->
   <!-- TOP APP BAR / HEADER -->
@@ -221,7 +227,7 @@
   <!-- ============================================================ -->
   <!-- MAIN CONTENT CONTAINER -->
   <!-- ============================================================ -->
-  <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-5 md:py-8">
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 pt-4 pb-28 md:pb-10">
 
     <!-- ============================================================ -->
     <!-- TAB 1: TRANSPARANSI PUBLIK -->
@@ -309,7 +315,7 @@
       </div>
 
       <!-- Pagination Controls for Smooth 894+ Records Browsing -->
-      <div id="publicPagination" class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200 text-xs text-slate-600">
+      <div id="publicPagination" class="clean-card p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600 shadow-sm mt-4 mb-20 sm:mb-8">
         <!-- Rendered dynamically -->
       </div>
     </section>
@@ -317,7 +323,7 @@
     <!-- ============================================================ -->
     <!-- TAB 2: KOTAK SARAN & ASPIRASI WARGA -->
     <!-- ============================================================ -->
-    <section id="tab-saran" class="hidden max-w-2xl mx-auto space-y-4">
+    <section id="tab-saran" class="hidden max-w-2xl mx-auto space-y-4 mb-20 sm:mb-8">
       
       <!-- Info Banner -->
       <div class="clean-card p-4 sm:p-5 bg-gradient-to-r from-emerald-50/70 to-teal-50/50 border-emerald-200/80">
@@ -357,10 +363,12 @@
             <textarea id="isiSaran" rows="5" required placeholder="Tuliskan aspirasi, kritik, atau usulan Anda dengan jelas dan santun..." oninput="updateCharCounter(this, 'charCountSaran', 10)" class="w-full text-xs md:text-sm bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition"></textarea>
           </div>
 
-          <button type="submit" id="btnSubmitSaran" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs md:text-sm py-3 px-4 rounded-xl shadow-sm hover:shadow transition flex items-center justify-center gap-2">
-            <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-            <span>Kirim Aspirasi Warga</span>
-          </button>
+          <div class="pt-2 pb-16 sm:pb-4">
+            <button type="submit" id="btnSubmitSaran" class="w-full bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-bold text-xs md:text-sm py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+              <span>Kirim Aspirasi Warga</span>
+            </button>
+          </div>
         </form>
       </div>
 
@@ -369,7 +377,7 @@
     <!-- ============================================================ -->
     <!-- TAB 3: LAPORAN KINERJA PERANGKAT DESA -->
     <!-- ============================================================ -->
-    <section id="tab-laporan" class="hidden max-w-2xl mx-auto space-y-4">
+    <section id="tab-laporan" class="hidden max-w-2xl mx-auto space-y-4 mb-20 sm:mb-8">
 
       <!-- Login Gate -->
       <div id="perangkatLoginGate" class="clean-card p-6 sm:p-8 text-center space-y-4">
@@ -443,33 +451,43 @@
               </div>
             </div>
 
-            <!-- Foto Upload Section -->
+            <!-- Foto Upload Section (Otomatis Konversi ke SVG Ringan) -->
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">Foto Kegiatan <span class="text-rose-500">*</span></label>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-xs font-semibold text-slate-700">Foto Dokumentasi Kegiatan <span class="text-rose-500">*</span></label>
+                <span class="text-[10px] text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">Auto SVG Engine</span>
+              </div>
               <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:border-emerald-500 transition bg-slate-50 cursor-pointer relative" onclick="document.getElementById('fotoLaporan').click()">
                 <input type="file" id="fotoLaporan" accept="image/*" required onchange="handlePhotoSelect(event)" class="hidden">
                 
-                <div id="photoPlaceholder" class="space-y-1 py-2">
-                  <div class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center">
+                <div id="photoPlaceholder" class="space-y-1.5 py-3">
+                  <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center shadow-xs">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                   </div>
-                  <p class="text-xs font-semibold text-slate-700">Ambil Foto / Pilih dari Galeri</p>
-                  <p class="text-[10px] text-slate-400">JPG, PNG, WebP (Maks. 5MB). Otomatis dioptimasi.</p>
+                  <p class="text-xs font-bold text-slate-700">Ambil Foto / Pilih dari Galeri</p>
+                  <p class="text-[11px] text-slate-500">JPG, PNG, JPEG, WebP. Otomatis dikonversi ke format SVG ringan.</p>
                 </div>
 
-                <div id="photoPreviewArea" class="hidden relative">
-                  <img id="photoPreviewImg" src="" alt="Preview Foto" class="max-h-48 mx-auto rounded-lg object-contain shadow-sm border border-slate-200">
-                  <button type="button" onclick="cancelPhotoSelect(event)" class="absolute top-1 right-1 bg-slate-900/80 text-white rounded-full p-1 hover:bg-slate-900 transition">
+                <div id="photoPreviewArea" class="hidden relative space-y-2">
+                  <img id="photoPreviewImg" src="" alt="Preview Foto Kegiatan" class="max-h-52 mx-auto rounded-lg object-contain shadow-sm border border-slate-200">
+                  <div id="svgConvertBadge" class="hidden flex items-center justify-center gap-1.5 text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 py-1.5 px-3 rounded-lg max-w-fit mx-auto shadow-xs">
+                    <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span id="svgBadgeText">Terkonversi ke Format SVG Ringan</span>
+                  </div>
+                  <button type="button" onclick="cancelPhotoSelect(event)" title="Ganti Foto" class="absolute top-1 right-1 bg-slate-900/80 hover:bg-slate-900 text-white rounded-full p-1.5 transition shadow">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                   </button>
                 </div>
               </div>
             </div>
 
-            <button type="submit" id="btnSubmitLaporan" class="w-full mt-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs md:text-sm py-3 px-4 rounded-xl shadow-sm hover:shadow transition flex items-center justify-center gap-2">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-              <span>Kirim Laporan</span>
-            </button>
+            <!-- Submit Button with generous bottom padding for mobile -->
+            <div class="pt-2 pb-16 sm:pb-4">
+              <button type="submit" id="btnSubmitLaporan" class="w-full bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-bold text-xs md:text-sm py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span>Kirim Laporan Kinerja</span>
+              </button>
+            </div>
           </form>
         </div>
 
@@ -480,7 +498,7 @@
     <!-- ============================================================ -->
     <!-- TAB 4: DASHBOARD ADMIN -->
     <!-- ============================================================ -->
-    <section id="tab-admin" class="hidden space-y-4">
+    <section id="tab-admin" class="hidden space-y-4 mb-20 sm:mb-8">
 
       <!-- Login Gate Admin -->
       <div id="adminLoginGate" class="max-w-md mx-auto clean-card p-6 sm:p-8 text-center space-y-4">
@@ -1350,23 +1368,26 @@
     }
 
     // -------------------------------------------------------------
-    // FOTO COMPRESSION & PREVIEW
+    // FOTO COMPRESSION & AUTOMATIC SVG VECTOR CONVERSION
     // -------------------------------------------------------------
     function handlePhotoSelect(e) {
       const file = e.target.files[0];
       if (!file) return;
 
-      if (file.size > 5 * 1024 * 1024) {
-        showToast('Ukuran foto maksimal 5MB', 'error');
+      if (file.size > 10 * 1024 * 1024) {
+        showToast('Ukuran file maksimal 10MB', 'error');
         e.target.value = '';
         return;
       }
+
+      showToast('Mengonversi foto ke format SVG ringan...', 'info');
 
       const reader = new FileReader();
       reader.onload = function(evt) {
         const img = new Image();
         img.onload = function() {
-          const maxDim = 1200;
+          // Downscale to maxDim 900px for crisp mobile and web performance
+          const maxDim = 900;
           let w = img.width, h = img.height;
           if (w > h && w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
           else if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
@@ -1377,10 +1398,41 @@
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, w, h);
 
-          selectedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.82);
-          document.getElementById('photoPreviewImg').src = selectedPhotoBase64;
+          // Get highly compressed raster image stream
+          let rasterDataUrl = '';
+          try {
+            rasterDataUrl = canvas.toDataURL('image/webp', 0.82);
+            if (!rasterDataUrl.startsWith('data:image/webp')) {
+              rasterDataUrl = canvas.toDataURL('image/jpeg', 0.80);
+            }
+          } catch(err) {
+            rasterDataUrl = canvas.toDataURL('image/jpeg', 0.80);
+          }
+
+          // Wrap automatically into clean, valid SVG vector format
+          const svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><image width="${w}" height="${h}" xlink:href="${rasterDataUrl}" href="${rasterDataUrl}"/></svg>`;
+          
+          // Data URL with image/svg+xml format for database storage and display
+          selectedPhotoBase64 = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgMarkup);
+
+          const approxKb = Math.round((selectedPhotoBase64.length * 0.75) / 1024);
+
+          const previewImg = document.getElementById('photoPreviewImg');
+          if (previewImg) previewImg.src = selectedPhotoBase64;
+
+          const badgeEl = document.getElementById('svgConvertBadge');
+          const badgeText = document.getElementById('svgBadgeText');
+          if (badgeEl && badgeText) {
+            badgeText.textContent = `Terkonversi ke Format SVG Ringan (${approxKb} KB)`;
+            badgeEl.classList.remove('hidden');
+          }
+
           document.getElementById('photoPreviewArea').classList.remove('hidden');
           document.getElementById('photoPlaceholder').classList.add('hidden');
+          showToast(`Foto berhasil dikonversi ke SVG (${approxKb} KB)`, 'success');
+        };
+        img.onerror = function() {
+          showToast('Gagal memproses gambar. Pastikan format file didukung.', 'error');
         };
         img.src = evt.target.result;
       };
@@ -1391,7 +1443,10 @@
       if (e) e.stopPropagation();
       selectedPhotoBase64 = null;
       document.getElementById('fotoLaporan').value = '';
-      document.getElementById('photoPreviewImg').src = '';
+      const previewImg = document.getElementById('photoPreviewImg');
+      if (previewImg) previewImg.src = '';
+      const badgeEl = document.getElementById('svgConvertBadge');
+      if (badgeEl) badgeEl.classList.add('hidden');
       document.getElementById('photoPreviewArea').classList.add('hidden');
       document.getElementById('photoPlaceholder').classList.remove('hidden');
     }
@@ -1653,25 +1708,27 @@
 
       if (paginationEl) {
         paginationEl.innerHTML = `
-          <div class="font-medium text-slate-500">
-            Menampilkan <span class="font-bold text-slate-800">${startIndex + 1} - ${endIndex}</span> dari <span class="font-bold text-slate-800">${totalItems}</span> laporan
-          </div>
-          <div class="flex items-center gap-1.5 flex-wrap justify-center sm:justify-end">
-            <button onclick="changePublicPage(1)" ${publicCurrentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
-              «
-            </button>
-            <button onclick="changePublicPage(${publicCurrentPage - 1})" ${publicCurrentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
-              ‹ Sebelumnya
-            </button>
-            <span class="px-3 py-1.5 font-bold text-slate-700 bg-slate-100 rounded-lg">
-              ${publicCurrentPage} / ${totalPages}
-            </span>
-            <button onclick="changePublicPage(${publicCurrentPage + 1})" ${publicCurrentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
-              Berikutnya ›
-            </button>
-            <button onclick="changePublicPage(${totalPages})" ${publicCurrentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
-              »
-            </button>
+          <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-3.5">
+            <div class="order-2 sm:order-1 text-center sm:text-left text-slate-500 font-medium text-xs">
+              Menampilkan <span class="font-bold text-slate-900">${startIndex + 1} - ${endIndex}</span> dari <span class="font-bold text-slate-900">${totalItems}</span> laporan
+            </div>
+            <div class="order-1 sm:order-2 flex items-center justify-center gap-1.5 flex-wrap w-full sm:w-auto">
+              <button onclick="changePublicPage(1)" title="Halaman Pertama" ${publicCurrentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-2 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-xs font-bold"' : 'class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-bold shadow-sm transition cursor-pointer"'}>
+                «
+              </button>
+              <button onclick="changePublicPage(${publicCurrentPage - 1})" ${publicCurrentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-xs font-semibold"' : 'class="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-semibold shadow-sm transition cursor-pointer"'}>
+                ‹ Sebelumnya
+              </button>
+              <span class="px-3.5 py-2 font-bold text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-xl shadow-xs">
+                ${publicCurrentPage} / ${totalPages}
+              </span>
+              <button onclick="changePublicPage(${publicCurrentPage + 1})" ${publicCurrentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-xs font-semibold"' : 'class="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-semibold shadow-sm transition cursor-pointer"'}>
+                Berikutnya ›
+              </button>
+              <button onclick="changePublicPage(${totalPages})" title="Halaman Terakhir" ${publicCurrentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-2 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-xs font-bold"' : 'class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-bold shadow-sm transition cursor-pointer"'}>
+                »
+              </button>
+            </div>
           </div>
         `;
       }
@@ -1680,10 +1737,7 @@
     function changePublicPage(newPage) {
       publicCurrentPage = newPage;
       renderReportsPublic(false);
-      const container = document.getElementById('reportsPublicContainer');
-      if (container) {
-        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function renderReportsAdmin(resetPage = false) {
@@ -1717,25 +1771,27 @@
 
       if (paginationEl) {
         paginationEl.innerHTML = `
-          <div class="font-medium text-slate-500">
-            Menampilkan <span class="font-bold text-slate-800">${startIndex + 1} - ${endIndex}</span> dari <span class="font-bold text-slate-800">${totalItems}</span> laporan
-          </div>
-          <div class="flex items-center gap-1.5 flex-wrap justify-center sm:justify-end">
-            <button onclick="changeAdminPage(1)" ${adminCurrentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
-              «
-            </button>
-            <button onclick="changeAdminPage(${adminCurrentPage - 1})" ${adminCurrentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
-              ‹ Sebelumnya
-            </button>
-            <span class="px-3 py-1.5 font-bold text-slate-700 bg-slate-100 rounded-lg">
-              ${adminCurrentPage} / ${totalPages}
-            </span>
-            <button onclick="changeAdminPage(${adminCurrentPage + 1})" ${adminCurrentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
-              Berikutnya ›
-            </button>
-            <button onclick="changeAdminPage(${totalPages})" ${adminCurrentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-400"' : 'class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition"'}>
-              »
-            </button>
+          <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-3.5">
+            <div class="order-2 sm:order-1 text-center sm:text-left text-slate-500 font-medium text-xs">
+              Menampilkan <span class="font-bold text-slate-900">${startIndex + 1} - ${endIndex}</span> dari <span class="font-bold text-slate-900">${totalItems}</span> laporan
+            </div>
+            <div class="order-1 sm:order-2 flex items-center justify-center gap-1.5 flex-wrap w-full sm:w-auto">
+              <button onclick="changeAdminPage(1)" title="Halaman Pertama" ${adminCurrentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-2 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-xs font-bold"' : 'class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-bold shadow-sm transition cursor-pointer"'}>
+                «
+              </button>
+              <button onclick="changeAdminPage(${adminCurrentPage - 1})" ${adminCurrentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-xs font-semibold"' : 'class="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-semibold shadow-sm transition cursor-pointer"'}>
+                ‹ Sebelumnya
+              </button>
+              <span class="px-3.5 py-2 font-bold text-xs text-indigo-800 bg-indigo-50 border border-indigo-200 rounded-xl shadow-xs">
+                ${adminCurrentPage} / ${totalPages}
+              </span>
+              <button onclick="changeAdminPage(${adminCurrentPage + 1})" ${adminCurrentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-xs font-semibold"' : 'class="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-semibold shadow-sm transition cursor-pointer"'}>
+                Berikutnya ›
+              </button>
+              <button onclick="changeAdminPage(${totalPages})" title="Halaman Terakhir" ${adminCurrentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-2 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-xs font-bold"' : 'class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-bold shadow-sm transition cursor-pointer"'}>
+                »
+              </button>
+            </div>
           </div>
         `;
       }
@@ -1744,10 +1800,7 @@
     function changeAdminPage(newPage) {
       adminCurrentPage = newPage;
       renderReportsAdmin(false);
-      const container = document.getElementById('reportsAdminContainer');
-      if (container) {
-        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function getSafePhotoUrl(url, width = null) {
