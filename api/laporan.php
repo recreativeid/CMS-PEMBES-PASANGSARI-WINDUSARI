@@ -51,7 +51,8 @@ if ($method === 'GET') {
 
 // POST: Simpan laporan baru (bisa single object atau batch array)
 if ($method === 'POST') {
-    $input = file_get_contents('php://input');
+    $rawInput = file_get_contents('php://input');
+    $input = preg_replace('/^\xEF\xBB\xBF/', '', trim($rawInput));
     $data = json_decode($input, true);
 
     if (!$data) {

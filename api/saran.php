@@ -30,7 +30,8 @@ if ($method === 'GET') {
 
 // POST: Simpan saran baru
 if ($method === 'POST') {
-    $input = file_get_contents('php://input');
+    $rawInput = file_get_contents('php://input');
+    $input = preg_replace('/^\xEF\xBB\xBF/', '', trim($rawInput));
     $data = json_decode($input, true);
 
     if (!$data) {
