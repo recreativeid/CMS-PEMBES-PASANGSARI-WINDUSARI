@@ -1207,23 +1207,52 @@
     }
 
     // -------------------------------------------------------------
-    // DATA LOAD & SEED
+    // DATA LOAD & CENTRAL SERVER API
     // -------------------------------------------------------------
     async function loadInitialData() {
-      if (isSupabaseConnected && supabaseClient) {
-        try {
-          const { data: lap } = await supabaseClient.from('laporan').select('*').order('created_at', { ascending: false }).range(0, 4999);
-          if (lap && lap.length > 0) allLaporan = lap;
-          else allLaporan = [...SEED_LAPORAN];
+      let loadedFromApi = false;
+      try {
+        const resLap = await fetch('./api/laporan.php?limit=5000', { cache: 'no-store' });
+        if (resLap.ok) {
+          const dataLap = await resLap.json();
+          if (Array.isArray(dataLap) && dataLap.length > 0) {
+            allLaporan = dataLap;
+            loadedFromApi = true;
+          }
+        }
 
-          const { data: sar } = await supabaseClient.from('saran').select('*').order('created_at', { ascending: false }).range(0, 999);
-          if (sar && sar.length > 0) allSaran = sar;
-          else allSaran = [...SEED_SARAN];
-        } catch (e) {
+        const resSar = await fetch('./api/saran.php?limit=1000', { cache: 'no-store' });
+        if (resSar.ok) {
+          const dataSar = await resSar.json();
+          if (Array.isArray(dataSar) && dataSar.length > 0) {
+            allSaran = dataSar;
+          }
+        }
+      } catch (err) {
+        console.warn('API backend not reachable, checking fallback...', err);
+      }
+
+      if (!loadedFromApi) {
+        if (isSupabaseConnected && supabaseClient) {
+          try {
+            const { data: lap } = await supabaseClient.from('laporan').select('*').order('created_at', { ascending: false }).range(0, 4999);
+            if (lap && lap.length > 0) allLaporan = lap;
+            else allLaporan = [...SEED_LAPORAN];
+
+            const { data: sar } = await supabaseClient.from('saran').select('*').order('created_at', { ascending: false }).range(0, 999);
+            if (sar && sar.length > 0) allSaran = sar;
+            else allSaran = [...SEED_SARAN];
+          } catch (e) {
+            loadLocalFallback();
+          }
+        } else {
           loadLocalFallback();
         }
       } else {
-        loadLocalFallback();
+        // Simpan cache lokal untuk akses cepat offline
+        saveLocalData();
+        // Cek jika ada laporan yang pernah diinput secara lokal/offline di perangkat ini
+        syncOfflineReportsToServer();
       }
 
       updatePublicStats();
@@ -1235,6 +1264,51 @@
       }
       const countEl = document.getElementById('modalRecordsCount');
       if (countEl) countEl.textContent = `${allLaporan.length} Laporan`;
+    }
+
+    // Auto-sync laporan yang tersimpan di HP/LocalStorage (berawalan id: loc-) ke server pusat
+    async function syncOfflineReportsToServer() {
+      try {
+        const storedLap = localStorage.getItem('pasang_laporan_data');
+        if (!storedLap) return;
+        const parsed = JSON.parse(storedLap);
+        if (!Array.isArray(parsed)) return;
+
+        const offlineReports = parsed.filter(r => r && String(r.id).startsWith('loc-'));
+        if (offlineReports.length === 0) return;
+
+        console.log(`Menyinkronkan ${offlineReports.length} laporan lokal ke server pusat...`);
+        const res = await fetch('./api/laporan.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(offlineReports)
+        });
+
+        if (res.ok) {
+          const resJson = await res.json();
+          if (resJson.success && Array.isArray(resJson.data)) {
+            let updatedCount = 0;
+            resJson.data.forEach(savedItem => {
+              const idx = allLaporan.findIndex(item => item.judul === savedItem.judul && item.jabatan === savedItem.jabatan && String(item.id).startsWith('loc-'));
+              if (idx !== -1) {
+                allLaporan[idx].id = savedItem.id;
+                updatedCount++;
+              } else {
+                allLaporan.unshift(savedItem);
+                updatedCount++;
+              }
+            });
+            saveLocalData();
+            if (updatedCount > 0) {
+              updatePublicStats();
+              renderReportsPublic(true);
+              showToast(`${updatedCount} laporan lokal berhasil disinkronkan ke server pusat!`, 'success');
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Sync offline reports failed:', e);
+      }
     }
 
     function loadLocalFallback() {
@@ -1652,12 +1726,38 @@
       };
 
       try {
-        if (isSupabaseConnected && supabaseClient) {
+        let savedSuccessfully = false;
+
+        // 1. Simpan ke Central Server Database via REST API
+        try {
+          const res = await fetch('./api/laporan.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newLaporan)
+          });
+          if (res.ok) {
+            const resJson = await res.json();
+            if (resJson.success && resJson.data) {
+              allLaporan.unshift(resJson.data);
+              saveLocalData();
+              savedSuccessfully = true;
+            }
+          }
+        } catch (apiErr) {
+          console.warn('API save failed, trying fallback...', apiErr);
+        }
+
+        // 2. Supabase fallback jika terhubung
+        if (!savedSuccessfully && isSupabaseConnected && supabaseClient) {
           const { data, error } = await supabaseClient.from('laporan').insert([newLaporan]).select();
-          if (error) throw error;
-          if (data && data[0]) allLaporan.unshift(data[0]);
-          else allLaporan.unshift({ ...newLaporan, id: 'sp-' + Date.now() });
-        } else {
+          if (!error && data && data[0]) {
+            allLaporan.unshift(data[0]);
+            savedSuccessfully = true;
+          }
+        }
+
+        // 3. Simpan lokal jika server/koneksi terputus (akan otomatis di-sync saat online)
+        if (!savedSuccessfully) {
           allLaporan.unshift({ ...newLaporan, id: 'loc-' + Date.now() });
           saveLocalData();
         }
@@ -1670,7 +1770,7 @@
           updateChecklistJabatan();
           renderReportsAdmin(true);
         }
-        showToast('Laporan kegiatan berhasil dikirim & dipublikasikan!', 'success');
+        showToast('Laporan kegiatan berhasil dikirim & dipublikasikan ke seluruh perangkat!', 'success');
         switchTab('transparansi');
       } catch (err) {
         showToast('Gagal: ' + err.message, 'error');
@@ -1704,12 +1804,34 @@
       };
 
       try {
-        if (isSupabaseConnected && supabaseClient) {
+        let saved = false;
+        try {
+          const res = await fetch('./api/saran.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newSaran)
+          });
+          if (res.ok) {
+            const json = await res.json();
+            if (json.success && json.data) {
+              allSaran.unshift(json.data);
+              saveLocalData();
+              saved = true;
+            }
+          }
+        } catch (e) {
+          console.warn('API saran error, fallback...', e);
+        }
+
+        if (!saved && isSupabaseConnected && supabaseClient) {
           const { data, error } = await supabaseClient.from('saran').insert([newSaran]).select();
-          if (error) throw error;
-          if (data && data[0]) allSaran.unshift(data[0]);
-          else allSaran.unshift({ ...newSaran, id: 'sr-' + Date.now() });
-        } else {
+          if (!error && data && data[0]) {
+            allSaran.unshift(data[0]);
+            saved = true;
+          }
+        }
+
+        if (!saved) {
           allSaran.unshift({ ...newSaran, id: 'sr-' + Date.now() });
           saveLocalData();
         }
@@ -2145,6 +2267,12 @@
     async function deleteLaporanRecord(id) {
       if (!confirm('Hapus laporan kegiatan ini?')) return;
       try {
+        try {
+          await fetch('./api/laporan.php?id=' + encodeURIComponent(id), { method: 'DELETE' });
+        } catch (apiErr) {
+          console.warn('API delete error:', apiErr);
+        }
+
         if (isSupabaseConnected && supabaseClient) {
           await supabaseClient.from('laporan').delete().eq('id', id);
         }
@@ -2163,6 +2291,12 @@
     async function deleteSaranRecord(id) {
       if (!confirm('Hapus saran aspirasi ini?')) return;
       try {
+        try {
+          await fetch('./api/saran.php?id=' + encodeURIComponent(id), { method: 'DELETE' });
+        } catch (apiErr) {
+          console.warn('API delete saran error:', apiErr);
+        }
+
         if (isSupabaseConnected && supabaseClient) {
           await supabaseClient.from('saran').delete().eq('id', id);
         }

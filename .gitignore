@@ -1,0 +1,10 @@
+# SQLite Database
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+api/data/*.sqlite*
+
+# Environment & OS
+.DS_Store
+Thumbs.db
